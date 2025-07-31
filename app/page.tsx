@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import { Sun, Moon } from "lucide-react";
 
 export default function HomePage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [darkMode, setDarkMode] = useState(false);
+  const router = useRouter();
+
+  // Auto-redirect to /dashboard after login
+  useEffect(() => {
+    if (isLoaded && user) {
+      router.push("/dashboard");
+    }
+  }, [user, isLoaded, router]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -66,30 +75,33 @@ export default function HomePage() {
 
         {/* Features Grid */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12">
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <h3 className="font-semibold">Agile Boards</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Plan sprints, track progress, and manage tasks visually.
-            </p>
-          </div>
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <h3 className="font-semibold">Team Collaboration</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Comment, assign, and discuss within tasks.
-            </p>
-          </div>
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <h3 className="font-semibold">Issue Tracking</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Keep bugs and enhancements organized.
-            </p>
-          </div>
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <h3 className="font-semibold">Analytics</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Visualize productivity across your team.
-            </p>
-          </div>
+          {[
+            {
+              title: "Agile Boards",
+              desc: "Plan sprints, track progress, and manage tasks visually.",
+            },
+            {
+              title: "Team Collaboration",
+              desc: "Comment, assign, and discuss within tasks.",
+            },
+            {
+              title: "Issue Tracking",
+              desc: "Keep bugs and enhancements organized.",
+            },
+            {
+              title: "Analytics",
+              desc: "Visualize productivity across your team.",
+            },
+          ].map(({ title, desc }) => (
+            <div
+              key={title}
+              className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 shadow-sm">
+              <h3 className="font-semibold text-lg">{title}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {desc}
+              </p>
+            </div>
+          ))}
         </section>
 
         {/* Footer */}
